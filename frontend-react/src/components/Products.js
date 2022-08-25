@@ -3,8 +3,6 @@ import "./Products.css"
 
 const Products = (props) =>{
     const productsItems = props.productsItems
-    
-
     return(
         
         <div className="products">
