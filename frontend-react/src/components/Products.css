@@ -1,0 +1,28 @@
+
+.products{
+    margin: 20px auto;
+    width: 80%;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+
+.product-add-button{
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    background-color: black;
+    color: white;
+    width: 30%;
+    height: 40px;
+    /* display: block; */
+    cursor: pointer;
+    text-transform: uppercase;
+    margin: 15px auto;
+}
+
+.product-add-button:active {
+    transform: translateY(2px);
+}
