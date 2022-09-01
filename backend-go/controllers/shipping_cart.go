@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	m "consoleshop/database/models"
+	m "consoleshop/models"
 	"log"
 	"net/http"
 

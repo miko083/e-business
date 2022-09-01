@@ -8,4 +8,5 @@ type User struct {
 	gorm.Model
 	FirstName string `json:"fist_name"`
 	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
 }

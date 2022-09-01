@@ -1,7 +1,7 @@
 package database
 
 import (
-	m "consoleshop/database/models"
+	m "consoleshop/models"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -14,8 +14,8 @@ func Setup() {
 
 func seed(db *gorm.DB) {
 	users := []m.User{
-		{FirstName: "John", LastName: "Smith"},
-		{FirstName: "George", LastName: "Washington"},
+		{FirstName: "John", LastName: "Smith", Email: "test1@gmail.com"},
+		{FirstName: "George", LastName: "Washington", Email: "test2@gmail.com"},
 	}
 	for _, u := range users {
 		db.Create(&u)

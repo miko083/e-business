@@ -1,7 +1,8 @@
 package routing
 
 import (
-	c "consoleshop/database/controllers"
+	c "consoleshop/controllers"
+	a "consoleshop/controllers/authentication"
 
 	"net/http"
 
@@ -57,6 +58,10 @@ func Init() *echo.Echo {
 	e.POST("/payments", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Payment done.")
 	})
+
+	// Login
+	e.GET("/auth/google/login", a.AuthGoogleLogin)
+	e.GET("/auth/google/callback", a.AuthGoogleCallback)
 
 	return e
 }
