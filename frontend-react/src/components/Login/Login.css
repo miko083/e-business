@@ -1,0 +1,25 @@
+.google-button,.github-button{
+    font-weight: 700;
+    font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    background-color: #4286f5;
+    color: white;
+    width: 30%;
+    height: 40px;
+    /* display: block; */
+    display: flex;  
+    cursor: pointer;
+    text-transform: uppercase;
+    margin: 15px auto;
+    justify-content: center;  
+    align-items: center;  
+}
+
+.google-button{
+    background-color: #4286f5;
+}
+.github-button{
+    background-color: #0d2636
+}

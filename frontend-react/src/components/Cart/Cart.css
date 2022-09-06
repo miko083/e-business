@@ -1,8 +1,14 @@
+.console-name {
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.quantity {
+    font-size: 20px;
+}
 .cart-items{
     margin: 20px auto;
     width: 80%;
-    font-weight: 700;
-    font-size: 18px;
 }
 
 .cart-add-button, .cart-remove-button {
@@ -14,6 +20,7 @@
     font-size: 18px;
     color: white;
     cursor: pointer;
+    
 }
 
 .cart-add-button {
@@ -25,24 +32,27 @@
 }
 
 .clear-cart-button, .save-payments-button{
-    border: none;
-    border-radius: 10px;
-    height: 30px;
+    font-weight: 700;
     font-size: 18px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    background-color: black;
     color: white;
+    width: 30%;
+    height: 40px;
+    /* display: block; */
+    text-transform: uppercase;
+    margin: 15px auto;
+    cursor: pointer;
 }
 
 .clear-cart-button{
     background-color: lightcoral;
-    width: 100px;
-    font-size: 18px;
     color: white;
-    margin-bottom: 20px;
 }
 
 .save-payments-button {
     background-color:yellowgreen;
-    width: 200px;
-    font-size: 16px;
     color: rgb(28, 25, 25);
 }

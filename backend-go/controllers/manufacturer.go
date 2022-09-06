@@ -18,11 +18,11 @@ func GetManufactures(c echo.Context) error {
 	return c.JSON(http.StatusOK, manufacturers)
 }
 
-func GetManufacturer(c echo.Context) error {
+func GetConsolesFromManufacturer(c echo.Context) error {
 	id := c.Param("id")
-	var manufacturer m.Manufacturer
-	database.DBconnection.Find(&manufacturer, "ID = ?", id)
-	return c.JSON(http.StatusOK, manufacturer)
+	var consoles []m.Console
+	database.DBconnection.Preload("Manufacturer").Find(&consoles, "manufacturer_id = ?", id)
+	return c.JSON(http.StatusOK, consoles)
 }
 
 func AddManufacturer(c echo.Context) error {

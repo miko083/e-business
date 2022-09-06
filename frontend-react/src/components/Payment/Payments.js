@@ -1,8 +1,8 @@
 import React from "react"
+import PaymentSingle from "./PaymentSingle";
+import "./Payments.css"
 
-const Payments = (props) => {
-    const cartItems = props.cartItems
-    const totalPrice = props.totalPrice
+const Payments = ({cartItems, totalPrice, makePay}) => {
     return (
         <div className="cart-items">
           
@@ -11,15 +11,12 @@ const Payments = (props) => {
           )}
   
           {cartItems.map((cartItem) => (
-                  <div className="card">
-                      <div>{cartItem.product.name}</div>
-                      <div>Quantity: {cartItem.quantity}</div>
-                  </div>
-              ))}
+                <PaymentSingle cartItem={cartItem}/>
+            ))}
   
           {cartItems.length >= 1 && (<div>
             <h2> Total price: {totalPrice} zl</h2> 
-            <button className="save-payments-button" onClick={() => props.makePay()}>Pay</button>
+            <button className="pay-button" onClick={() => makePay()}>Pay</button>
             </div>
           )}
         </div>

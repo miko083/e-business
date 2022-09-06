@@ -1,0 +1,29 @@
+.console-name {
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.quantity {
+    font-size: 20px;
+}
+
+.cart-items{
+    margin: 20px auto;
+    width: 80%;
+}
+
+.pay-button {
+    font-weight: 700;
+    font-size: 20px;
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    background-color: green;
+    color: white;
+    width: 15%;
+    height: 40px;
+    /* display: block; */
+    text-transform: uppercase;
+    margin: 15px auto;
+    cursor: pointer;
+}

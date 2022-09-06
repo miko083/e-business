@@ -27,9 +27,9 @@ func Init() *echo.Echo {
 	e.PUT("/consoles/:id", c.UpdateConsole)
 
 	// Manufacturer API
-	e.GET("/manufactures", c.GetManufactures)
-	e.GET("/manufactures/:id", c.GetManufacturer)
-	e.POST("/manufactures", c.AddManufacturer)
+	e.GET("/manufacturers", c.GetManufactures)
+	e.GET("/manufacturers/:id", c.GetConsolesFromManufacturer)
+	e.POST("/manufacturers", c.AddManufacturer)
 	e.DELETE("/manufactures/:id", c.DeleteManufacturer)
 	e.PUT("/manufactures/:id", c.UpdateManufacturer)
 
@@ -62,6 +62,12 @@ func Init() *echo.Echo {
 	// Login
 	e.GET("/auth/google/login", a.AuthGoogleLogin)
 	e.GET("/auth/google/callback", a.AuthGoogleCallback)
+
+	e.GET("/auth/github/login", a.AuthGithubLogin)
+	e.GET("/auth/github/callback", a.AuthGithubCallback)
+
+	// Logout
+	e.POST("/logout", c.LogoutUser)
 
 	return e
 }

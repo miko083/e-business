@@ -2,12 +2,16 @@
 .products{
     margin: 20px auto;
     width: 80%;
-    font-weight: 700;
     font-size: 18px;
 }
 
+.product-name {
+    font-size: 21px;
+    font-weight: 700;
+}
 
-.product-add-button{
+
+.product-add-button, .login-button{
     font-weight: 700;
     font-size: 18px;
     border-radius: 5px;
@@ -18,11 +22,19 @@
     width: 30%;
     height: 40px;
     /* display: block; */
-    cursor: pointer;
     text-transform: uppercase;
     margin: 15px auto;
+}
+
+.login-button {
+    background-color: #606060;
+}
+.product-add-button {
+    cursor: pointer;
+    background-color: #4C9900;
 }
 
 .product-add-button:active {
     transform: translateY(2px);
 }
+
