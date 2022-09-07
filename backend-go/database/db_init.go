@@ -22,7 +22,7 @@ func seed(db *gorm.DB) {
 	}
 
 	var johnSmith m.User
-	db.First(&johnSmith, "first_name = ?", "John")
+	db.First(&johnSmith, "email = ?", "test1@gmail.com")
 
 	manufacturers := []m.Manufacturer{
 		{Name: "Microsoft", OriginCountry: "USA"},

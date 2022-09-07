@@ -6,7 +6,8 @@ import (
 
 type ShippingCart struct {
 	gorm.Model
-	UserID               int                   `json:"user_id"`
-	User                 User                  `json:"user"`
+	UserEmail            string                `json:"user_email"`
+	User                 User                  `gorm:"foreignKey:UserEmail" json:"user"`
 	ConsolesWithQuantity []ConsoleWithQuantity `json:"consoles_with_quantity"`
+	PaymentDone          bool                  `json:"payment_done"`
 }

@@ -3,11 +3,14 @@ package controllers
 import (
 	"consoleshop/database"
 	m "consoleshop/models"
+	"encoding/json"
 	"os"
 )
 
-func checkIfAuthenticated(body map[string]interface{}) bool {
-	email := body["email"].(string)
+func checkIfAuthenticated(bodyBytes []byte) bool {
+	body := make(map[string]interface{})
+	json.Unmarshal(bodyBytes, &body)
+	email := body["user_email"].(string)
 	loginTokenFromFront := body["login_token"].(string)
 	var userToCheck m.User
 	database.DBconnection.Where("email = ?", email).Limit(1).Find(&userToCheck)

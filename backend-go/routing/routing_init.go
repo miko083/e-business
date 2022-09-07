@@ -4,8 +4,6 @@ import (
 	c "consoleshop/controllers"
 	a "consoleshop/controllers/authentication"
 
-	"net/http"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -47,17 +45,16 @@ func Init() *echo.Echo {
 	e.DELETE("/consoleswithquantity/:id", c.DeleteConsoleWithQuantity)
 	e.PUT("/consoleswithquantity/:id", c.UpdateConsoleWithQuantity)
 
-	// Console With Quantity API
+	// Shopping Cart API
 	e.GET("/carts", c.GetCarts)
 	e.GET("/carts/:id", c.GetCart)
+	e.POST("/cartsUser", c.GetCartForUser)
 	e.POST("/carts", c.AddCart)
 	e.DELETE("/carts/:id", c.DeleteCart)
 	e.PUT("/carts/:id", c.UpdateCart)
 
 	// Payments
-	e.POST("/payments", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Payment done.")
-	})
+	e.POST("/payments", c.MakePayment)
 
 	// Login
 	e.GET("/auth/google/login", a.AuthGoogleLogin)

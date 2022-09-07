@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"bytes"
 	m "consoleshop/models"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"encoding/json"
+	"io/ioutil"
 )
 
 func GetUsers(c echo.Context) error {
@@ -106,17 +108,19 @@ func UpdateUser(c echo.Context) error {
 }
 
 func LogoutUser(c echo.Context) error {
-	body := make(map[string]interface{})
-	json.NewDecoder(c.Request().Body).Decode(&body)
-	email := body["email"].(string)
-	if checkIfAuthenticated(body) {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAuthenticated(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		body := make(map[string]interface{})
+		json.NewDecoder(c.Request().Body).Decode(&body)
+		email := body["user_email"].(string)
 		var userToLogout m.User
 		database.DBconnection.Find(&userToLogout, "email = ?", email)
 		userToLogout.AccessToken = ""
 		userToLogout.LoginToken = ""
 		userToLogout.IsLoggedIn = false
 		database.DBconnection.Save(&userToLogout)
-		return c.JSON(http.StatusOK, "User with the email logout")
+		return c.JSON(http.StatusOK, "User with the email "+email+" logout")
 	} else {
 		return c.JSON(http.StatusForbidden, "Not allowed.")
 	}

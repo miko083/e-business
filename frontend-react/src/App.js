@@ -52,7 +52,8 @@ const App = () => {
   const makePay = () => {
 
     const dataToSend = {
-      user_id: 1,
+      user_email: userEmail,
+      login_token: loginToken,
       money_to_pay: totalPrice
     }
     
@@ -63,17 +64,65 @@ const App = () => {
     }
 
     fetch(`http://localhost:8000/payments`, requestOptions).then((response) => {
-      if(!response.ok) throw new Error(response.status);
-        else alert("Payment done.")
+      if(!response.ok) alert("Please save first shipping cart.");
+        else {
+          alert("Payment done.")
+          setCartItems([])
+          setTotalPrice(0)
+        }
     })
-    setCartItems([])
-    setTotalPrice(0)
-
   }
+
+  const submitCart = () => {
+
+    const consolesWithQuantityToSend = []
+
+    cartItems.map((item) => consolesWithQuantityToSend.push({"console_id": item.product.ID,"quantity": item.quantity}))
+    const dataToSend = {
+      user_email: userEmail,
+      login_token: loginToken,
+      consoles_with_quantity: consolesWithQuantityToSend
+    }
+    
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToSend)
+    }
+
+    fetch(`http://localhost:8000/carts`, requestOptions)
+  
+}
+
+const getCart = () => {
+  const dataToSend = {
+    user_email: userEmail,
+    login_token: loginToken,
+  }
+  
+  const requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(dataToSend)
+  }
+  var cartItemsFromBackend = []
+  var tempTotalPrice = 0
+  setTotalPrice(0)
+
+  fetch(`http://localhost:8000/cartsUser`, requestOptions).then(response => response.json()).then(response => {
+    response["consoles_with_quantity"].map(consoleWithQuantity=> {
+      cartItemsFromBackend.push({"product": consoleWithQuantity.console, "quantity": consoleWithQuantity.quantity }) ;
+      tempTotalPrice += (consoleWithQuantity.console.price * consoleWithQuantity.quantity);
+      return ""}); 
+    
+    setTotalPrice(tempTotalPrice)
+    setCartItems(cartItemsFromBackend)
+  })
+}
 
   const logout = () => {
     const dataToSend = {
-      email: userEmail,
+      user_email: userEmail,
       login_token: loginToken
     }
 
@@ -104,7 +153,7 @@ const App = () => {
             <Route path="/manufacturers" element={<Manufacturers/>}></Route>
             <Route path="/manufacturers/:id" element={<Products handleAddProduct={handleAddProduct} setUserEmail={setUserEmail} setLoggedIn={setLoggedIn} setLoginToken={setLoginToken} isLoggedIn={isLoggedIn}/>}></Route>
             <Route path="/login" element={<Login/>}></Route> 
-            <Route path="/cart" element={<Cart cartItems={cartItems} handleAddProduct={handleAddProduct} handleRemoveProduct={handleRemoveProduct} handleCartClearance={handleCartClearance}/>}></Route>
+            <Route path="/cart" element={<Cart cartItems={cartItems} submitCart={submitCart} getCart={getCart} handleAddProduct={handleAddProduct} handleRemoveProduct={handleRemoveProduct} handleCartClearance={handleCartClearance}/>}></Route>
             <Route path="/payments" element={<Payments cartItems={cartItems} totalPrice={totalPrice} makePay={makePay}/>}></Route>
         </Routes>
       </Router>
