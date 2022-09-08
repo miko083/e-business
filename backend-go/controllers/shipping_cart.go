@@ -16,17 +16,31 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+var consolePreloadString = "ConsolesWithQuantity.Console"
+var consoleManufacturerPreloadString = "ConsolesWithQuantity.Console.Manufacturer"
+var forbiddenMessage = "Not allowed."
+
 func GetCarts(c echo.Context) error {
-	var shippingCartsWithQuantity []m.ShippingCart
-	database.DBconnection.Preload("User").Preload("ConsolesWithQuantity.Console").Preload("ConsolesWithQuantity.Console.Manufacturer").Find(&shippingCartsWithQuantity)
-	return c.JSON(http.StatusOK, shippingCartsWithQuantity)
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		var shippingCartsWithQuantity []m.ShippingCart
+		database.DBconnection.Preload("User").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCartsWithQuantity)
+		return c.JSON(http.StatusOK, shippingCartsWithQuantity)
+	}
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func GetCart(c echo.Context) error {
-	id := c.Param("id")
-	var shippingCart m.ShippingCart
-	database.DBconnection.Preload("User").Preload("ConsolesWithQuantity").Preload("ConsolesWithQuantity.Console").Preload("ConsolesWithQuantity.Console.Manufacturer").Find(&shippingCart, "ID = ?", id)
-	return c.JSON(http.StatusOK, shippingCart)
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		id := c.Param("id")
+		var shippingCart m.ShippingCart
+		database.DBconnection.Preload("User").Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "ID = ?", id)
+		return c.JSON(http.StatusOK, shippingCart)
+	}
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func GetCartForUser(c echo.Context) error {
@@ -37,48 +51,69 @@ func GetCartForUser(c echo.Context) error {
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
 		var shippingCart m.ShippingCart
-		database.DBconnection.Preload("ConsolesWithQuantity").Preload("ConsolesWithQuantity.Console").Preload("ConsolesWithQuantity.Console.Manufacturer").Find(&shippingCart, "user_email = ? AND payment_done = ?", email, false)
+		database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ? AND payment_done = ?", email, false)
 		return c.JSON(http.StatusOK, shippingCart)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func AddCart(c echo.Context) error {
 	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
 	if checkIfAuthenticated(bodyBytes) {
 		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		shippingCartOld := m.ShippingCart{}
+		body := make(map[string]interface{})
+		json.NewDecoder(c.Request().Body).Decode(&body)
+		email := body["user_email"].(string)
+		query := database.DBconnection.Find(&shippingCartOld, "user_email = ? AND payment_done = ?", email, false)
+		if query.RowsAffected > 0 {
+			database.DBconnection.Delete(&shippingCartOld)
+		}
+
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		shippingCart := m.ShippingCart{}
 		c.Bind(&shippingCart)
+		database.DBconnection.Find(&shippingCartOld, "user_email = ? AND payment_done = ?", email, false)
 		database.DBconnection.Create(&shippingCart)
 		return c.JSON(http.StatusOK, "Added new shipping cart.")
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func DeleteCart(c echo.Context) error {
-	id := c.Param("id")
-	database.DBconnection.Delete(&m.ShippingCart{}, id)
-	return c.JSON(http.StatusOK, "Deleted shipping cart with the id: "+id)
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAuthenticated(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		id := c.Param("id")
+		database.DBconnection.Delete(&m.ShippingCart{}, id)
+		return c.JSON(http.StatusOK, "Deleted shipping cart with the id: "+id)
+	}
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func UpdateCart(c echo.Context) error {
-	id := c.Param("id")
-	var shippingCartToUpdate m.ShippingCart
-	database.DBconnection.Find(&shippingCartToUpdate, "ID = ?", id)
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAuthenticated(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		id := c.Param("id")
+		var shippingCartToUpdate m.ShippingCart
+		database.DBconnection.Find(&shippingCartToUpdate, "ID = ?", id)
 
-	shippingCartFromBody := m.ShippingCart{}
-	err := c.Bind(&shippingCartFromBody)
-	if err != nil {
-		log.Printf("Failed: %s", err)
-		return echo.NewHTTPError(http.StatusInternalServerError)
+		shippingCartFromBody := m.ShippingCart{}
+		err := c.Bind(&shippingCartFromBody)
+		if err != nil {
+			log.Printf("Failed: %s", err)
+			return echo.NewHTTPError(http.StatusInternalServerError)
+		}
+
+		if shippingCartFromBody.ConsolesWithQuantity != nil {
+			shippingCartToUpdate.ConsolesWithQuantity = shippingCartFromBody.ConsolesWithQuantity
+		}
+
+		database.DBconnection.Save(&shippingCartToUpdate)
+		return c.JSON(http.StatusOK, "Updated shipping cart with the id: "+id)
 	}
-
-	if shippingCartFromBody.ConsolesWithQuantity != nil {
-		shippingCartToUpdate.ConsolesWithQuantity = shippingCartFromBody.ConsolesWithQuantity
-	}
-
-	database.DBconnection.Save(&shippingCartToUpdate)
-	return c.JSON(http.StatusOK, "Updated shipping cart with the id: "+id)
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func MakePayment(c echo.Context) error {
@@ -90,7 +125,7 @@ func MakePayment(c echo.Context) error {
 		email := body["user_email"].(string)
 		fmt.Println(email)
 		var shippingCart m.ShippingCart
-		query := database.DBconnection.Preload("ConsolesWithQuantity").Preload("ConsolesWithQuantity.Console").Preload("ConsolesWithQuantity.Console.Manufacturer").Find(&shippingCart, "user_email = ?", email)
+		query := database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ?", email)
 		if query.RowsAffected > 0 {
 			shippingCart.PaymentDone = true
 			database.DBconnection.Save(&shippingCart)
@@ -98,5 +133,5 @@ func MakePayment(c echo.Context) error {
 		}
 		return c.JSON(http.StatusBadRequest, "No shipping cart.")
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }

@@ -17,7 +17,9 @@ func checkIfAuthenticated(bodyBytes []byte) bool {
 	return loginTokenFromFront == userToCheck.LoginToken
 }
 
-func checkIfAdmin(body map[string]interface{}) bool {
+func checkIfAdmin(bodyBytes []byte) bool {
+	body := make(map[string]interface{})
+	json.Unmarshal(bodyBytes, &body)
 	adminPassword := os.Getenv("ADMIN_PASSWORD")
 	if adminPasswordFromRequest, ok := body["admin_token"]; ok {
 		return adminPassword == adminPasswordFromRequest

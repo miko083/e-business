@@ -13,6 +13,7 @@ func Setup() {
 }
 
 func seed(db *gorm.DB) {
+	nameQuery := "name = ?"
 	users := []m.User{
 		{FirstName: "John", LastName: "Smith", Email: "test1@gmail.com"},
 		{FirstName: "George", LastName: "Washington", Email: "test2@gmail.com"},
@@ -27,18 +28,28 @@ func seed(db *gorm.DB) {
 	manufacturers := []m.Manufacturer{
 		{Name: "Microsoft", OriginCountry: "USA"},
 		{Name: "Sony", OriginCountry: "Japan"},
+		{Name: "Nintendo", OriginCountry: "Japan"},
 	}
 	for _, m := range manufacturers {
 		db.Create(&m)
 	}
 
-	var microsoft, sony m.Manufacturer
-	db.First(&microsoft, "name = ?", "Microsoft")
-	db.First(&sony, "name = ?", "Sony")
+	var microsoft, sony, nintendo m.Manufacturer
+	db.First(&microsoft, nameQuery, "Microsoft")
+	db.First(&sony, nameQuery, "Sony")
+	db.First(&nintendo, nameQuery, "Nintendo")
 
 	consoles := []m.Console{
 		{Name: "Xbox Series X", Price: 2499, Manufacturer: microsoft},
+		{Name: "Xbox Series S", Price: 1299, Manufacturer: microsoft},
+		{Name: "Xbox One S", Price: 1399, Manufacturer: microsoft},
+		{Name: "Xbox One X", Price: 2299, Manufacturer: microsoft},
+
 		{Name: "Playstation 5", Price: 2599, Manufacturer: sony},
+		{Name: "Playstation 4 Pro", Price: 2199, Manufacturer: sony},
+		{Name: "Playstation 4", Price: 1699, Manufacturer: sony},
+
+		{Name: "Nintendo Switch", Price: 1499, Manufacturer: nintendo},
 	}
 
 	for _, c := range consoles {
@@ -46,10 +57,10 @@ func seed(db *gorm.DB) {
 	}
 
 	var xboxSeriesX m.Console
-	db.First(&xboxSeriesX, "name = ?", "Xbox Series X")
+	db.First(&xboxSeriesX, nameQuery, "Xbox Series X")
 
 	var playstation5 m.Console
-	db.First(&playstation5, "name = ?", "Playstation 5")
+	db.First(&playstation5, nameQuery, "Playstation 5")
 
 	consolesWithQuantity := []m.ConsoleWithQuantity{
 		{Console: xboxSeriesX, Quantity: 5},

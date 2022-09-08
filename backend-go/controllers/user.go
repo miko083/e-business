@@ -17,32 +17,32 @@ import (
 )
 
 func GetUsers(c echo.Context) error {
-	body := make(map[string]interface{})
-	json.NewDecoder(c.Request().Body).Decode(&body)
-	if checkIfAdmin(body) {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		var users []m.User
 		database.DBconnection.Find(&users)
 		return c.JSON(http.StatusOK, users)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func GetUser(c echo.Context) error {
-	body := make(map[string]interface{})
-	json.NewDecoder(c.Request().Body).Decode(&body)
-	if checkIfAdmin(body) {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		id := c.Param("id")
 		var user m.User
 		database.DBconnection.Find(&user, "ID = ?", id)
 		return c.JSON(http.StatusOK, user)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func AddUser(c echo.Context) error {
-	body := make(map[string]interface{})
-	json.NewDecoder(c.Request().Body).Decode(&body)
-	if checkIfAdmin(body) {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		user := m.User{}
 		err := c.Bind(&user)
 		if err != nil {
@@ -52,24 +52,24 @@ func AddUser(c echo.Context) error {
 		database.DBconnection.Create(&user)
 		return c.JSON(http.StatusOK, "Added new user.")
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func DeleteUser(c echo.Context) error {
-	body := make(map[string]interface{})
-	json.NewDecoder(c.Request().Body).Decode(&body)
-	if checkIfAdmin(body) {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		id := c.Param("id")
 		database.DBconnection.Delete(&m.User{}, id)
 		return c.JSON(http.StatusOK, "Deleted user with the id: "+id)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func UpdateUser(c echo.Context) error {
-	body := make(map[string]interface{})
-	json.NewDecoder(c.Request().Body).Decode(&body)
-	if checkIfAdmin(body) {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAdmin(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		id := c.Param("id")
 		var userToUpdate m.User
 		database.DBconnection.Find(&userToUpdate, "ID = ?", id)
@@ -104,7 +104,7 @@ func UpdateUser(c echo.Context) error {
 		database.DBconnection.Save(&userToUpdate)
 		return c.JSON(http.StatusOK, "Updated user with the id: "+id)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func LogoutUser(c echo.Context) error {
@@ -122,6 +122,6 @@ func LogoutUser(c echo.Context) error {
 		database.DBconnection.Save(&userToLogout)
 		return c.JSON(http.StatusOK, "User with the email "+email+" logout")
 	} else {
-		return c.JSON(http.StatusForbidden, "Not allowed.")
+		return c.JSON(http.StatusForbidden, forbiddenMessage)
 	}
 }

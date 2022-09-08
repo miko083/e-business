@@ -34,7 +34,7 @@ var googleOauthConfig = &oauth2.Config{
 
 func AuthGoogleLogin(c echo.Context) error {
 
-	stateGoogle := generateState()
+	stateGoogle = generateState()
 	url := googleOauthConfig.AuthCodeURL(stateGoogle)
 	return c.Redirect(http.StatusTemporaryRedirect, url)
 }
