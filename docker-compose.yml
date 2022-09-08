@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+    ebiznes-backend:
+        container_name: ebiznes-backend-go
+        build: ./backend-go
+        ports:
+          - "8000:8000"
+        env_file:
+          - ./.backend_env
+   
+    ebiznes-frontend:
+        container_name: ebiznes-frontend-react
+        build: ./frontend-react
+        ports:
+          - "3000:3000"
+        depends_on:
+          - ebiznes-backend
