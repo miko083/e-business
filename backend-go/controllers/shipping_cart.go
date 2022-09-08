@@ -19,6 +19,7 @@ import (
 var consolePreloadString = "ConsolesWithQuantity.Console"
 var consoleManufacturerPreloadString = "ConsolesWithQuantity.Console.Manufacturer"
 var forbiddenMessage = "Not allowed."
+var userMailPaymentDoneQuery = "user_email = ? AND payment_done = ?"
 
 func GetCarts(c echo.Context) error {
 	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
@@ -51,7 +52,7 @@ func GetCartForUser(c echo.Context) error {
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
 		var shippingCart m.ShippingCart
-		database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ? AND payment_done = ?", email, false)
+		database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, userMailPaymentDoneQuery, email, false)
 		return c.JSON(http.StatusOK, shippingCart)
 	}
 	return c.JSON(http.StatusForbidden, forbiddenMessage)
@@ -65,7 +66,7 @@ func AddCart(c echo.Context) error {
 		body := make(map[string]interface{})
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
-		query := database.DBconnection.Find(&shippingCartOld, "user_email = ? AND payment_done = ?", email, false)
+		query := database.DBconnection.Find(&shippingCartOld, userMailPaymentDoneQuery, email, false)
 		if query.RowsAffected > 0 {
 			database.DBconnection.Delete(&shippingCartOld)
 		}
@@ -73,7 +74,7 @@ func AddCart(c echo.Context) error {
 		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		shippingCart := m.ShippingCart{}
 		c.Bind(&shippingCart)
-		database.DBconnection.Find(&shippingCartOld, "user_email = ? AND payment_done = ?", email, false)
+		database.DBconnection.Find(&shippingCartOld, userMailPaymentDoneQuery, email, false)
 		database.DBconnection.Create(&shippingCart)
 		return c.JSON(http.StatusOK, "Added new shipping cart.")
 	}

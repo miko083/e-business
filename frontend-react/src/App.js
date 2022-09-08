@@ -105,8 +105,8 @@ const getCart = () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(dataToSend)
   }
-  var cartItemsFromBackend = []
-  var tempTotalPrice = 0
+  let cartItemsFromBackend = []
+  let tempTotalPrice = 0
   setTotalPrice(0)
 
   fetch(`http://localhost:8000/cartsUser`, requestOptions).then(response => response.json()).then(response => {

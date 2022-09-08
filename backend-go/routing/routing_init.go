@@ -9,6 +9,10 @@ import (
 )
 
 func Init() *echo.Echo {
+	consolesWithIDRoute := "/consoles/:id"
+	usersWithIDRoute := "/users/:id"
+	consolesWithQuantityIDRoute := "/consoleswithquantity/:id"
+	cartWithIDRoute := "/carts/:id"
 	e := echo.New()
 
 	// Set CORS
@@ -19,10 +23,10 @@ func Init() *echo.Echo {
 
 	// Console API
 	e.GET("/consoles", c.GetConsoles)
-	e.GET("/consoles/:id", c.GetConsole)
+	e.GET(consolesWithIDRoute, c.GetConsole)
 	e.POST("/consoles", c.AddConsole)
-	e.DELETE("/consoles/:id", c.DeleteConsole)
-	e.PUT("/consoles/:id", c.UpdateConsole)
+	e.DELETE(consolesWithIDRoute, c.DeleteConsole)
+	e.PUT(consolesWithIDRoute, c.UpdateConsole)
 
 	// Manufacturer API
 	e.GET("/manufacturers", c.GetManufactures)
@@ -33,25 +37,25 @@ func Init() *echo.Echo {
 
 	// User API
 	e.GET("/users", c.GetUsers)
-	e.GET("/users/:id", c.GetUser)
+	e.GET(usersWithIDRoute, c.GetUser)
 	e.POST("/users", c.AddUser)
-	e.DELETE("/users/:id", c.DeleteUser)
-	e.PUT("/users/:id", c.UpdateUser)
+	e.DELETE(usersWithIDRoute, c.DeleteUser)
+	e.PUT(usersWithIDRoute, c.UpdateUser)
 
 	// Console With Quantity API
 	e.GET("/consoleswithquantity", c.GetConsolesWithQuantity)
-	e.GET("/consoleswithquantity/:id", c.GetConsoleWithQuantity)
+	e.GET(consolesWithQuantityIDRoute, c.GetConsoleWithQuantity)
 	e.POST("/consoleswithquantity", c.AddConsoleWithQuantity)
-	e.DELETE("/consoleswithquantity/:id", c.DeleteConsoleWithQuantity)
-	e.PUT("/consoleswithquantity/:id", c.UpdateConsoleWithQuantity)
+	e.DELETE(consolesWithQuantityIDRoute, c.DeleteConsoleWithQuantity)
+	e.PUT(consolesWithQuantityIDRoute, c.UpdateConsoleWithQuantity)
 
 	// Shopping Cart API
 	e.GET("/carts", c.GetCarts)
-	e.GET("/carts/:id", c.GetCart)
+	e.GET(cartWithIDRoute, c.GetCart)
 	e.POST("/cartsUser", c.GetCartForUser)
 	e.POST("/carts", c.AddCart)
-	e.DELETE("/carts/:id", c.DeleteCart)
-	e.PUT("/carts/:id", c.UpdateCart)
+	e.DELETE(cartWithIDRoute, c.DeleteCart)
+	e.PUT(cartWithIDRoute, c.UpdateCart)
 
 	// Payments
 	e.POST("/payments", c.MakePayment)

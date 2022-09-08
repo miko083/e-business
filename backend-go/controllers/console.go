@@ -40,7 +40,7 @@ func AddConsole(c echo.Context) error {
 		database.DBconnection.Create(&console)
 		return c.JSON(http.StatusOK, "Added new console.")
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func DeleteConsole(c echo.Context) error {
@@ -51,7 +51,7 @@ func DeleteConsole(c echo.Context) error {
 		database.DBconnection.Delete(&m.Console{}, id)
 		return c.JSON(http.StatusOK, "Deleted console with the id: "+id)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func UpdateConsole(c echo.Context) error {
@@ -84,5 +84,5 @@ func UpdateConsole(c echo.Context) error {
 		database.DBconnection.Save(&consoleToUpdate)
 		return c.JSON(http.StatusOK, "Updated console with the id: "+id)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }

@@ -6,7 +6,7 @@ import React, { useEffect, useState} from 'react'
 
 
 const Products = ({handleAddProduct, isLoggedIn, setUserEmail, setLoggedIn, setLoginToken}) =>{
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams] = useSearchParams()
     const token = searchParams.get("login_token")
     const [productsItems, setProductsItems] = useState([])
     const parameter = useParams()
@@ -20,7 +20,7 @@ const Products = ({handleAddProduct, isLoggedIn, setUserEmail, setLoggedIn, setL
       })
       }, [])
     
-    var itemsToPresent = productsItems
+    let itemsToPresent = productsItems
     if (parameter.id != null){
         itemsToPresent = productsItems.filter( (product) => product.manufacturer_id == parameter.id)
     }

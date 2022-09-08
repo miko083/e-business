@@ -41,7 +41,7 @@ func AddManufacturer(c echo.Context) error {
 		database.DBconnection.Create(&manufacturer)
 		return c.JSON(http.StatusOK, "Added new manufacturer.")
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func DeleteManufacturer(c echo.Context) error {
@@ -52,7 +52,7 @@ func DeleteManufacturer(c echo.Context) error {
 		database.DBconnection.Delete(&m.Manufacturer{}, id)
 		return c.JSON(http.StatusOK, "Deleted manufacturer with the id: "+id)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
 func UpdateManufacturer(c echo.Context) error {
@@ -81,5 +81,5 @@ func UpdateManufacturer(c echo.Context) error {
 		database.DBconnection.Save(&manufacturerToUpdate)
 		return c.JSON(http.StatusOK, "Updated manufacturer with the id: "+id)
 	}
-	return c.JSON(http.StatusForbidden, "Not allowed.")
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
