@@ -37,7 +37,7 @@ func GetCartForUser(c echo.Context) error {
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
 		var shippingCart m.ShippingCart
-		database.DBconnection.Preload("ConsolesWithQuantity").Preload("ConsolesWithQuantity.Console").Preload("ConsolesWithQuantity.Console.Manufacturer").Find(&shippingCart, "user_email = ?", email, "payment_done = ?", false)
+		database.DBconnection.Preload("ConsolesWithQuantity").Preload("ConsolesWithQuantity.Console").Preload("ConsolesWithQuantity.Console.Manufacturer").Find(&shippingCart, "user_email = ? AND payment_done = ?", email, false)
 		return c.JSON(http.StatusOK, shippingCart)
 	}
 	return c.JSON(http.StatusForbidden, "Not allowed.")
