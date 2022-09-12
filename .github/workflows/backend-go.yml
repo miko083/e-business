@@ -32,7 +32,7 @@ jobs:
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $DOCKER_IMAGE_WITH_TAG --tag $DOCKER_IMAGE:latest
+      run: docker build --file Dockerfile -t $DOCKER_IMAGE -t $DOCKER_IMAGE_WITH_TAG .
       
     - name: Push the Docker image
       run: docker push $DOCKER_IMAGE
