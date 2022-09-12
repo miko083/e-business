@@ -23,7 +23,7 @@ var stateGithub = ""
 
 // Github OAuth2 Config
 var githubOauthConfig = &oauth2.Config{
-	RedirectURL:  "http://localhost:8000/auth/github/callback",
+	RedirectURL:  BackEndToRedirect + "/auth/github/callback",
 	ClientID:     os.Getenv("GITHUB_OAUTH_CLIENT_ID"),
 	ClientSecret: os.Getenv("GITHUB_OAUTH_CLIENT_SECRET"),
 	Scopes: []string{

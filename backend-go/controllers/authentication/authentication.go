@@ -14,6 +14,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
+const BackEndToRedirect = "http://localhost:8000"
 const frontEndLink = "http://localhost:3000/?login_token="
 
 func databaseSignupOrLogin(email string, firstName string, lastName string, accessToken string) string {
