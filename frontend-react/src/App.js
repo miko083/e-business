@@ -11,6 +11,8 @@ import useLocalStorage from'./hooks/UseLocalStorage'
 import React from 'react'
 import Manufacturers from './components/Manufacturers/Manufacturers';
 
+import {backEndLink, headersForRequests} from './components/RequestSetup'
+
 const App = () => {
 
   const [cartItems, setCartItems] = useLocalStorage('cart_items', [])
@@ -59,11 +61,11 @@ const App = () => {
     
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headersForRequests,
       body: JSON.stringify(dataToSend)
     }
 
-    fetch(`http://localhost:8000/payments`, requestOptions).then((response) => {
+    fetch(backEndLink + '/payments', requestOptions).then((response) => {
       if(!response.ok) alert("Please save first shipping cart.");
         else {
           alert("Payment done.")
@@ -86,11 +88,11 @@ const App = () => {
     
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headersForRequests,
       body: JSON.stringify(dataToSend)
     }
 
-    fetch(`http://localhost:8000/carts`, requestOptions)
+    fetch(backEndLink + '/carts', requestOptions)
   
 }
 
@@ -102,14 +104,14 @@ const getCart = () => {
   
   const requestOptions = {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: headersForRequests,
     body: JSON.stringify(dataToSend)
   }
   let cartItemsFromBackend = []
   let tempTotalPrice = 0
   setTotalPrice(0)
 
-  fetch(`http://localhost:8000/cartsUser`, requestOptions).then(response => response.json()).then(response => {
+  fetch(backEndLink + '/cartsUser', requestOptions).then(response => response.json()).then(response => {
     response["consoles_with_quantity"].map(consoleWithQuantity=> {
       cartItemsFromBackend.push({"product": consoleWithQuantity.console, "quantity": consoleWithQuantity.quantity }) ;
       tempTotalPrice += (consoleWithQuantity.console.price * consoleWithQuantity.quantity);
@@ -128,11 +130,11 @@ const getCart = () => {
 
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headersForRequests,
       body: JSON.stringify(dataToSend)
     }
 
-    fetch(`http://localhost:8000/logout`, requestOptions).then((response) => {
+    fetch(backEndLink + '/logout', requestOptions).then((response) => {
       if(!response.ok) alert("Something went wrong!")
         else alert(userEmail + " log out.")
     })

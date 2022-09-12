@@ -3,6 +3,7 @@ import {useSearchParams, useParams} from 'react-router-dom'
 import jwt_decode from "jwt-decode";
 import ProductSingle from "./ProductSingle";
 import React, { useEffect, useState} from 'react'
+import {backEndLink, headersForRequests} from '../RequestSetup'
 
 
 const Products = ({handleAddProduct, isLoggedIn, setUserEmail, setLoggedIn, setLoginToken}) =>{
@@ -12,7 +13,12 @@ const Products = ({handleAddProduct, isLoggedIn, setUserEmail, setLoggedIn, setL
     const parameter = useParams()
 
     useEffect(() => {
-        fetch("http://localhost:8000/consoles").then((res) => res.json()).then((products) => {
+
+        const requestOptions = {
+            method: 'GET',
+            headers: headersForRequests,
+        }
+        fetch(backEndLink + "/consoles", requestOptions).then((res) => res.json()).then((products) => {
             const newProducts = products.map((product) => {
                 return product
             })

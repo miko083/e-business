@@ -1,14 +1,15 @@
 import "./Login.css"
+import {backEndLink} from '../RequestSetup'
 
 const Login = () => {
     const onClickGoogle = event => {
         event.preventDefault();
-        window.location.assign('http://localhost:8000/auth/google/login');
+        window.location.assign(backEndLink + '/auth/google/login');
     }
 
     const onClickGithub = event => {
         event.preventDefault();
-        window.location.assign('http://localhost:8000/auth/github/login');
+        window.location.assign(backEndLink + '/auth/github/login');
     }
     return (
         <div>

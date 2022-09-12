@@ -18,7 +18,7 @@ const Header = ({isLoggedIn, loginEmail, logout}) => {
             <div>
                 <div>Logged as {loginEmail}</div>
                 <HeaderSingleElement link={"/cart"} nameToDisplay="Cart"/>
-                <HeaderSingleElement link={"/payments"} nameToDisplay="Payments"/>
+                {/* <HeaderSingleElement link={"/payments"} nameToDisplay="Payments"/> */}
                 <HeaderSingleElement link={"/"} nameToDisplay="Logout" functionForClick={logout}/>
             </div>
             )}
