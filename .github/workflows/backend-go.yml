@@ -17,11 +17,11 @@ jobs:
         working-directory: backend-go
 
     steps:
+    - uses: actions/checkout@v3
+    
     - name: Set Docker tag
       run: echo "DOCKER_TAG=$DOCKER_USER/ebusiness-go-backend:$(date +%s)" >> $GITHUB_ENV
         
-    - uses: actions/checkout@v3
-    
     - name: Login to the Docker hub
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     
