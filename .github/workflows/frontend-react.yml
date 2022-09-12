@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Set backend variable
-      run: sed -i 's+http://localhost:8000+https://e-business-mikolaj-backend.azurewebsites.net+g' frontend-react/src/components/RequestSetup.js
+      run: sed -i 's+http://localhost:8000+https://e-business-mikolaj-backend.azurewebsites.net+g' src/components/RequestSetup.js
            
     - name: Login to the Docker hub
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
