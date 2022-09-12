@@ -9,7 +9,7 @@ env:
   DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
 
 jobs:
-  build:
+  build-and-deploy:
     environment: production
     runs-on: ubuntu-latest
     
@@ -24,13 +24,19 @@ jobs:
       run: sed -i 's/8000/80/g' main.go Dockerfile
     
     - name: Set Docker tag
-      run: echo "DOCKER_TAG=$DOCKER_USER/ebusiness-go-backend:$(date +%s)" >> $GITHUB_ENV
+      run: echo "DOCKER_IMAGE=$DOCKER_USER/ebusiness-go-backend:$(date +%s)" >> $GITHUB_ENV
         
     - name: Login to the Docker hub
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $DOCKER_TAG
+      run: docker build . --file Dockerfile --tag $DOCKER_IMAGE
       
     - name: Push the Docker image
-      run: docker push $DOCKER_TAG
+      run: docker push $DOCKER_IMAGE
+
+    - uses: azure/webapps-deploy@v2
+      with:
+        app-name: 'e-business-mikolaj-backend'
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        images: '$DOCKER_IMAGE'
