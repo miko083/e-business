@@ -24,6 +24,9 @@ jobs:
 
     - name: Set frontend variable
       run: sed -i 's+http://localhost:3000+https://e-business-mikolaj-frontend.azurewebsites.net+g' routing/routing_init.go controllers/authentication/authentication.go
+
+    - name: Set backend variable
+      run: sed -i 's+http://localhost:8000+https://e-business-mikolaj-backend.azurewebsites.net+g' controllers/authentication/authentication.go
          
     - name: Login to the Docker hub
       run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
