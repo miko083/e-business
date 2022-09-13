@@ -58,6 +58,7 @@ func Init() *echo.Echo {
 	e.PUT(cartWithIDRoute, c.UpdateCart)
 
 	// Payments
+	e.POST("/preparePayments", c.PreparePayment)
 	e.POST("/payments", c.MakePayment)
 
 	// Login
