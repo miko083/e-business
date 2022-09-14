@@ -76,7 +76,6 @@ const App = () => {
 
   const makePayment = () => {
 
-    console.log("MAKE PAYMENT")
     const dataToSend = {
       user_email: userEmail,
       login_token: loginToken,
@@ -92,6 +91,7 @@ const App = () => {
       if(!response.ok) throw new Error(response.status);
       else return response.json();
     }).then(response => {
+          alert("Payment done!")
           setCartItems([])
           setTotalPrice(0)
     })

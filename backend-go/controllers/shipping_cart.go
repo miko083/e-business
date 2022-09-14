@@ -127,13 +127,13 @@ func PreparePayment(c echo.Context) error {
 		body := make(map[string]interface{})
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
-		money_to_pay := int64(body["money_to_pay"].(float64)) * 100
+		moneyToPay := int64(body["money_to_pay"].(float64)) * 100
 		var shippingCart m.ShippingCart
 		query := database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ?", email)
 
 		if query.RowsAffected > 0 {
 			m := make(map[string]string)
-			m["stripe_token"] = preparePaymentIntent(money_to_pay)
+			m["stripe_token"] = preparePaymentIntent(moneyToPay)
 			return c.JSON(http.StatusOK, m)
 		}
 		return c.JSON(http.StatusBadRequest, "No shipping cart.")
