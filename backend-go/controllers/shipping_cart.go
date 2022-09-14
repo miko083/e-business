@@ -4,7 +4,6 @@ import (
 	"bytes"
 	m "consoleshop/models"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -14,12 +13,16 @@ import (
 	"github.com/labstack/echo/v4"
 
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+
+	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/paymentintent"
 )
 
-var consolePreloadString = "ConsolesWithQuantity.Console"
-var consoleManufacturerPreloadString = "ConsolesWithQuantity.Console.Manufacturer"
-var forbiddenMessage = "Not allowed."
-var userMailPaymentDoneQuery = "user_email = ? AND payment_done = ?"
+const consolePreloadString = "ConsolesWithQuantity.Console"
+const consoleManufacturerPreloadString = "ConsolesWithQuantity.Console.Manufacturer"
+const forbiddenMessage = "Not allowed."
+const userMailPaymentDoneQuery = "user_email = ? AND payment_done = ?"
+const keyForStripe = "sk_test_51LhMCXG0dnjPPiJiXx5HgrnffpgiHILoVWFZzodFTFir36GKgVfbyM7la0w07Z1RaWj9SqZJatBOgNQPcV33RIw700lQVbpxet"
 
 func GetCarts(c echo.Context) error {
 	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
@@ -117,6 +120,27 @@ func UpdateCart(c echo.Context) error {
 	return c.JSON(http.StatusForbidden, forbiddenMessage)
 }
 
+func PreparePayment(c echo.Context) error {
+	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
+	if checkIfAuthenticated(bodyBytes) {
+		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		body := make(map[string]interface{})
+		json.NewDecoder(c.Request().Body).Decode(&body)
+		email := body["user_email"].(string)
+		money_to_pay := int64(body["money_to_pay"].(float64)) * 100
+		var shippingCart m.ShippingCart
+		query := database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ?", email)
+
+		if query.RowsAffected > 0 {
+			m := make(map[string]string)
+			m["stripe_token"] = preparePaymentIntent(money_to_pay)
+			return c.JSON(http.StatusOK, m)
+		}
+		return c.JSON(http.StatusBadRequest, "No shipping cart.")
+	}
+	return c.JSON(http.StatusForbidden, forbiddenMessage)
+}
+
 func MakePayment(c echo.Context) error {
 	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
 	if checkIfAuthenticated(bodyBytes) {
@@ -124,9 +148,9 @@ func MakePayment(c echo.Context) error {
 		body := make(map[string]interface{})
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
-		fmt.Println(email)
 		var shippingCart m.ShippingCart
 		query := database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ?", email)
+
 		if query.RowsAffected > 0 {
 			shippingCart.PaymentDone = true
 			database.DBconnection.Save(&shippingCart)
@@ -135,4 +159,24 @@ func MakePayment(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "No shipping cart.")
 	}
 	return c.JSON(http.StatusForbidden, forbiddenMessage)
+}
+
+func preparePaymentIntent(moneyToPay int64) string {
+	stripe.Key = keyForStripe
+	params := &stripe.PaymentIntentParams{
+		Amount:   stripe.Int64(moneyToPay),
+		Currency: stripe.String(string(stripe.CurrencyPLN)),
+		AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+			Enabled: stripe.Bool(true),
+		},
+	}
+
+	pi, err := paymentintent.New(params)
+	log.Printf("pi.New: %v", pi.ClientSecret)
+
+	if err != nil {
+		log.Printf("pi.New: %v", err)
+	}
+
+	return pi.ClientSecret
 }

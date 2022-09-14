@@ -22,6 +22,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: Set frontend variable
+      run: sed -i 's+http://localhost:3000+https://e-business-mikolaj-frontend.azurewebsites.net+g' src/components/RequestSetup.js
+
     - name: Set backend variable
       run: sed -i 's+http://localhost:8000+https://e-business-mikolaj-backend.azurewebsites.net+g' src/components/RequestSetup.js
            

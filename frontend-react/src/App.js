@@ -8,7 +8,7 @@ import Payments from './components/Payment/Payments'
 import Login from './components/Login/Login';
 
 import useLocalStorage from'./hooks/UseLocalStorage'
-import React from 'react'
+import React, {useState} from 'react'
 import Manufacturers from './components/Manufacturers/Manufacturers';
 
 import {backEndLink, headersForRequests} from './components/RequestSetup'
@@ -21,6 +21,8 @@ const App = () => {
   const [userEmail, setUserEmail] = useLocalStorage('email',"")
   const [isLoggedIn, setLoggedIn] = useLocalStorage('is_logged_in', false)
   const [loginToken, setLoginToken] = useLocalStorage('login_token', '')
+
+  const [clientSecretStripe, setClientSecretStripe] = useState("")
   
   const handleAddProduct = (product) => {
     const productExist = cartItems.find((item) => item.product.ID === product.ID)
@@ -51,7 +53,7 @@ const App = () => {
       setTotalPrice(totalPrice - product.price)
   }
   
-  const makePay = () => {
+  const preparePayment = () => {
 
     const dataToSend = {
       user_email: userEmail,
@@ -64,14 +66,34 @@ const App = () => {
       headers: headersForRequests,
       body: JSON.stringify(dataToSend)
     }
+    fetch(backEndLink + '/preparePayments', requestOptions).then((response) => {
+      if(!response.ok) throw new Error(response.status);
+      else return response.json();
+    }).then(response => {
+          setClientSecretStripe(response.stripe_token)
+    })
+  }
+
+  const makePayment = () => {
+
+    console.log("MAKE PAYMENT")
+    const dataToSend = {
+      user_email: userEmail,
+      login_token: loginToken,
+    }
+    
+    const requestOptions = {
+      method: 'POST',
+      headers: headersForRequests,
+      body: JSON.stringify(dataToSend)
+    }
 
     fetch(backEndLink + '/payments', requestOptions).then((response) => {
-      if(!response.ok) alert("Please save first shipping cart.");
-        else {
-          alert("Payment done.")
+      if(!response.ok) throw new Error(response.status);
+      else return response.json();
+    }).then(response => {
           setCartItems([])
           setTotalPrice(0)
-        }
     })
   }
 
@@ -92,7 +114,9 @@ const App = () => {
       body: JSON.stringify(dataToSend)
     }
 
-    fetch(backEndLink + '/carts', requestOptions)
+    fetch(backEndLink + '/carts', requestOptions).then((response) => {
+      if(!response.ok) throw new Error(response.status);
+    })
   
 }
 
@@ -111,7 +135,10 @@ const getCart = () => {
   let tempTotalPrice = 0
   setTotalPrice(0)
 
-  fetch(backEndLink + '/cartsUser', requestOptions).then(response => response.json()).then(response => {
+  fetch(backEndLink + '/cartsUser', requestOptions).then((response) => {
+    if(!response.ok) throw new Error(response.status);
+    else return response.json();
+  }).then(response => {
     response["consoles_with_quantity"].map(consoleWithQuantity=> {
       cartItemsFromBackend.push({"product": consoleWithQuantity.console, "quantity": consoleWithQuantity.quantity }) ;
       tempTotalPrice += (consoleWithQuantity.console.price * consoleWithQuantity.quantity);
@@ -156,7 +183,7 @@ const getCart = () => {
             <Route path="/manufacturers/:id" element={<Products handleAddProduct={handleAddProduct} setUserEmail={setUserEmail} setLoggedIn={setLoggedIn} setLoginToken={setLoginToken} isLoggedIn={isLoggedIn}/>}></Route>
             <Route path="/login" element={<Login/>}></Route> 
             <Route path="/cart" element={<Cart cartItems={cartItems} submitCart={submitCart} getCart={getCart} handleAddProduct={handleAddProduct} handleRemoveProduct={handleRemoveProduct} handleCartClearance={handleCartClearance}/>}></Route>
-            <Route path="/payments" element={<Payments cartItems={cartItems} totalPrice={totalPrice} makePay={makePay}/>}></Route>
+            <Route path="/payments" element={<Payments cartItems={cartItems} totalPrice={totalPrice} makePayment={makePayment} preparePayment={preparePayment} clientSecret={clientSecretStripe}/>}></Route>
         </Routes>
       </Router>
     </div>
