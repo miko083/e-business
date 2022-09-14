@@ -23,7 +23,6 @@ const consoleManufacturerPreloadString = "ConsolesWithQuantity.Console.Manufactu
 const forbiddenMessage = "Not allowed."
 const userMailPaymentDoneQuery = "user_email = ? AND payment_done = ?"
 const keyForStripe = "sk_test_51LhMCXG0dnjPPiJiXx5HgrnffpgiHILoVWFZzodFTFir36GKgVfbyM7la0w07Z1RaWj9SqZJatBOgNQPcV33RIw700lQVbpxet"
-const frontEndLink = "http://localhost:3000/?stripe_token="
 
 func GetCarts(c echo.Context) error {
 	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
@@ -128,7 +127,7 @@ func PreparePayment(c echo.Context) error {
 		body := make(map[string]interface{})
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
-		money_to_pay := int64(body["money_to_pay"].(float64))
+		money_to_pay := int64(body["money_to_pay"].(float64)) * 100
 		var shippingCart m.ShippingCart
 		query := database.DBconnection.Preload("ConsolesWithQuantity").Preload(consolePreloadString).Preload(consoleManufacturerPreloadString).Find(&shippingCart, "user_email = ?", email)
 

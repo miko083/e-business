@@ -76,6 +76,7 @@ const App = () => {
 
   const makePayment = () => {
 
+    console.log("MAKE PAYMENT")
     const dataToSend = {
       user_email: userEmail,
       login_token: loginToken,

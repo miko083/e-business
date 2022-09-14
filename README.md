@@ -1,6 +1,8 @@
-# e-business
+# E-Business 
 
-## SonarCloud
+## E-Biznes Projekt Zaliczeniowy
+
+### SonarCloud
 
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=miko083_e-business&metric=bugs)](https://sonarcloud.io/summary/new_code?id=miko083_e-business)
 

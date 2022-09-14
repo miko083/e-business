@@ -4,8 +4,9 @@ import {
   useStripe,
   useElements
 } from "@stripe/react-stripe-js";
+import { frontEndLink } from "../RequestSetup";
 
-export const CheckoutForm = ({makePayment}) => {
+const CheckoutForm = ({makePayment}) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -29,7 +30,6 @@ export const CheckoutForm = ({makePayment}) => {
       switch (paymentIntent.status) {
         case "succeeded":
           setMessage("Payment succeeded!");
-          makePayment()
           break;
         case "processing":
           setMessage("Your payment is processing.");
@@ -59,7 +59,7 @@ export const CheckoutForm = ({makePayment}) => {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: frontEndLink,
       },
     });
 
@@ -80,7 +80,7 @@ export const CheckoutForm = ({makePayment}) => {
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <PaymentElement id="payment-element" />
-      <button className="pay-button" disabled={isLoading || !stripe || !elements} id="submit">
+      <button className="pay-button" onClick={() => makePayment()} disabled={isLoading || !stripe || !elements} id="submit">
         <span id="button-text">
           {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
         </span>
@@ -90,3 +90,5 @@ export const CheckoutForm = ({makePayment}) => {
     </form>
   );
 }
+
+export default CheckoutForm;

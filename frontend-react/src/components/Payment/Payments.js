@@ -3,7 +3,7 @@ import PaymentSingle from "./PaymentSingle";
 import "./Payments.css"
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { CheckoutForm } from "../Checkout/Checkout.js";
+import CheckoutForm from "../Checkout/Checkout";
 
 const stripePromise = loadStripe("pk_test_51LhMCXG0dnjPPiJiWgVK2u1ozxZs1Z71QQSCROSRrzvIdJHjTlEog0fI1HnhVCtItNaz915AFSWnxrjMmQctH3GN00XKtArsI0");
 
