@@ -65,19 +65,15 @@ func AddCart(c echo.Context) error {
 	bodyBytes, _ := ioutil.ReadAll(c.Request().Body)
 	if checkIfAuthenticated(bodyBytes) {
 		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-		shippingCartOld := m.ShippingCart{}
+		var shippingCartsOld []m.ShippingCart
 		body := make(map[string]interface{})
 		json.NewDecoder(c.Request().Body).Decode(&body)
 		email := body["user_email"].(string)
-		query := database.DBconnection.Find(&shippingCartOld, userMailPaymentDoneQuery, email, false)
-		if query.RowsAffected > 0 {
-			database.DBconnection.Delete(&shippingCartOld)
-		}
+		database.DBconnection.Delete(&shippingCartsOld, userMailPaymentDoneQuery, email, false)
 
 		c.Request().Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 		shippingCart := m.ShippingCart{}
 		c.Bind(&shippingCart)
-		database.DBconnection.Find(&shippingCartOld, userMailPaymentDoneQuery, email, false)
 		database.DBconnection.Create(&shippingCart)
 		return c.JSON(http.StatusOK, "Added new shipping cart.")
 	}

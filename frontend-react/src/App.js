@@ -11,7 +11,7 @@ import useLocalStorage from'./hooks/UseLocalStorage'
 import React, {useState} from 'react'
 import Manufacturers from './components/Manufacturers/Manufacturers';
 
-import {backEndLink, headersForRequests} from './components/RequestSetup'
+import {backEndLink, frontEndLink, headersForRequests} from './components/RequestSetup'
 
 const App = () => {
 
@@ -23,7 +23,10 @@ const App = () => {
   const [loginToken, setLoginToken] = useLocalStorage('login_token', '')
 
   const [clientSecretStripe, setClientSecretStripe] = useState("")
-  
+
+  const errorTokenMessage = "Token mismatch. Please re-login and try again."
+  const errorTokenShippingCartMessage = "Token mismatch or shipping cart is not saved. Please re-login and try again."
+
   const handleAddProduct = (product) => {
     const productExist = cartItems.find((item) => item.product.ID === product.ID)
     if (productExist) {
@@ -67,7 +70,7 @@ const App = () => {
       body: JSON.stringify(dataToSend)
     }
     fetch(backEndLink + '/preparePayments', requestOptions).then((response) => {
-      if(!response.ok) throw new Error(response.status);
+      if(!response.ok) alert(errorTokenShippingCartMessage);
       else return response.json();
     }).then(response => {
           setClientSecretStripe(response.stripe_token)
@@ -88,7 +91,7 @@ const App = () => {
     }
 
     fetch(backEndLink + '/payments', requestOptions).then((response) => {
-      if(!response.ok) throw new Error(response.status);
+      if(!response.ok) alert(errorTokenShippingCartMessage);
       else return response.json();
     }).then(response => {
           alert("Payment done!")
@@ -113,9 +116,9 @@ const App = () => {
       headers: headersForRequests,
       body: JSON.stringify(dataToSend)
     }
-
     fetch(backEndLink + '/carts', requestOptions).then((response) => {
-      if(!response.ok) throw new Error(response.status);
+        if(!response.ok) alert(errorTokenMessage)
+        else window.location.href = frontEndLink + "/payments"
     })
   
 }
@@ -136,7 +139,7 @@ const getCart = () => {
   setTotalPrice(0)
 
   fetch(backEndLink + '/cartsUser', requestOptions).then((response) => {
-    if(!response.ok) throw new Error(response.status);
+    if(!response.ok) alert(errorTokenMessage);
     else return response.json();
   }).then(response => {
     response["consoles_with_quantity"].map(consoleWithQuantity=> {
@@ -162,7 +165,7 @@ const getCart = () => {
     }
 
     fetch(backEndLink + '/logout', requestOptions).then((response) => {
-      if(!response.ok) alert("Something went wrong!")
+      if(!response.ok) alert("Something went wrong! Please re-login!")
         else alert(userEmail + " log out.")
     })
 

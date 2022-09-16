@@ -4,9 +4,8 @@ WORKDIR /ebiznes-consoleshop-frontend
 
 COPY . .
 
-RUN npm ci
-RUN npm run build
+RUN npm install
 
 EXPOSE 3000
 
-CMD [ "npx", "serve", "build" ]
+CMD [ "npm", "start" ]

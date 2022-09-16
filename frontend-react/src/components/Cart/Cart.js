@@ -4,7 +4,6 @@ import {useNavigate} from 'react-router-dom'
 import CartSingleProduct from "./CartSingleProduct"
 
 const Cart = ({submitCart, cartItems, getCart, handleAddProduct, handleRemoveProduct, handleCartClearance}) => {
-  const navigate = useNavigate()
     return (
       <div className="cart-items">
         
@@ -21,7 +20,7 @@ const Cart = ({submitCart, cartItems, getCart, handleAddProduct, handleRemovePro
         {cartItems.length >= 1 && (<div>
             <button className="clear-cart-button" onClick={() => handleCartClearance()}>Clear cart</button>
             <br></br>
-            <button className="save-payments-button" onClick={() =>{submitCart(); navigate("/payments")}}>Save and go to payments</button>
+            <button className="save-payments-button" onClick={() =>{submitCart()}}>Save and go to payments</button>
             </div>
         )}
       </div>
