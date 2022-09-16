@@ -1,6 +1,5 @@
 import React from "react"
 import "./Cart.css"
-import {useNavigate} from 'react-router-dom'
 import CartSingleProduct from "./CartSingleProduct"
 
 const Cart = ({submitCart, cartItems, getCart, handleAddProduct, handleRemoveProduct, handleCartClearance}) => {
